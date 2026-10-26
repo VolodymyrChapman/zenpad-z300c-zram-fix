@@ -58,9 +58,12 @@ Details are in [docs/technical-notes.md](docs/technical-notes.md).
 ## What you need
 - A Linux PC with Python 3.8+, `adb` and `fastboot` (e.g. the Ubuntu packages
   `adb` and `fastboot`). The standard fastboot 35 worked.
-- The official firmware package `UL-P023-WW-4.7.5.0-user.zip` from ASUS,
-  unzipped. It isn't included here: the boot image contains ASUS's files, so
-  you build the images yourself from your own copy.
+- The official firmware package `UL-P023-WW-4.7.5.0-user.zip`, unzipped.
+  Download it from the
+  [ASUS ZenPad 10 (Z300C) support page](https://www.asus.com/uk/supportonly/asus_zenpad_10_%28z300czd300c%29/helpdesk_bios/)
+  (BIOS & firmware section, the WW version 4.7.5.0). It
+  isn't included here: the boot image contains ASUS's files, so you build the
+  images yourself from your own copy.
 - An unlocked bootloader (see [Unlocking](#unlocking)).
 
 ## Build
@@ -98,7 +101,9 @@ The official package is a full update: it reformats `/system` and rewrites
 the boot and recovery images, but keeps your apps and data. Back up anything
 important anyway, and start with the battery above 50%.
 
-1. Copy `UL-P023-WW-4.7.5.0-user.zip` to the root of the tablet's internal storage:
+1. Copy `UL-P023-WW-4.7.5.0-user.zip` (from the
+   [ASUS support page](https://www.asus.com/uk/supportonly/asus_zenpad_10_%28z300czd300c%29/helpdesk_bios/))
+   to the root of the tablet's internal storage:
    ```bash
    adb push UL-P023-WW-4.7.5.0-user.zip /sdcard/
    ```
