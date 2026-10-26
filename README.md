@@ -97,13 +97,21 @@ sudo udevadm trigger
 Then unplug and replug the tablet.
 
 ## Updating to 4.7.5.0
+Do this first if `adb shell getprop ro.build.asus.version` prints anything
+other than `4.7.5.0` (for example `4.7.3.0`). You can also check on the tablet
+under Settings → About → Software information → Build number: it should end
+in `V4.7.5-20160419`. Do it too if WiFi stopped working after you flashed
+`boot-zram.img` (see [WiFi won't turn on after flashing](#wifi-wont-turn-on-after-flashing)).
+
 The official package is a full update: it reformats `/system` and rewrites
 the boot and recovery images, but keeps your apps and data. Back up anything
-important anyway, and start with the battery above 50%.
+important anyway, and start with the battery above 50%. You need about 1.2 GB
+free for the package itself.
 
 1. Copy `UL-P023-WW-4.7.5.0-user.zip` (from the
    [ASUS support page](https://www.asus.com/uk/supportonly/asus_zenpad_10_%28z300czd300c%29/helpdesk_bios/))
-   to the root of the tablet's internal storage:
+   to the root of the tablet's internal storage. Don't unzip it, and don't
+   rename it. Either drag it there over USB file transfer (MTP), or use:
    ```bash
    adb push UL-P023-WW-4.7.5.0-user.zip /sdcard/
    ```
@@ -155,6 +163,31 @@ firmware, install the full 4.7.5 package instead (see
 [Updating to 4.7.5](#updating-to-4750)).
 As a last resort, reinstalling the official `UL-P023-WW-4.7.5.0-user.zip`
 from recovery restores the whole system.
+
+## WiFi won't turn on after flashing
+**Cause:** you flashed `boot-zram.img` onto a tablet that runs older firmware
+(e.g. 4.7.3.0). The boot image contains the 4.7.5 kernel, and that kernel
+refuses the WiFi driver modules of any other firmware version, because each
+version signs its modules with its own key. Your apps and data are fine; only
+the kernel and `/system` don't match.
+
+**Symptoms:**
+- the WiFi switch flips back to off, or WiFi stays on "Turning on…";
+- `adb shell getprop ro.build.asus.version` prints something other than `4.7.5.0`;
+- `adb shell ls /sys/class/net` shows no `wlan0`;
+- `adb shell dmesg | grep "unknown module key"` shows lines like
+  `Request for unknown module key 'Magrathea: Glacier signing key: b3fdb619...' err -11`.
+
+**Fix:** bring `/system` up to the same version as the kernel.
+1. Follow [Updating to 4.7.5.0](#updating-to-4750). WiFi isn't needed for
+   this: the package goes over USB. The update also puts back ASUS's signed
+   4.7.5 boot image.
+2. Check that WiFi works again and that `ro.build.asus.version` is `4.7.5.0`.
+3. Flash `boot-zram.img` again, as in [Install](#install), steps 2–5.
+
+`boot-stock.img` doesn't help here: it's the 4.7.5 boot image, so it has the
+same mismatch. The original boot image of your older firmware is gone once
+it has been overwritten, unless you saved a copy beforehand.
 
 ## Fallback: hook in /system (if flashing doesn't stick)
 If your bootloader really refuses to write the boot partition, zram can be
