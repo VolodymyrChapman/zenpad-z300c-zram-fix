@@ -115,9 +115,16 @@ free for the package itself.
    ```bash
    adb push UL-P023-WW-4.7.5.0-user.zip /sdcard/
    ```
-2. On the tablet, tap the "System update file detected" notification. It may
-   take a minute to appear; if it doesn't, restart the tablet. Then confirm.
-   The tablet reboots into recovery and installs the update.
+2. **Restart the tablet.** The update notification doesn't appear when the file
+   is copied, only after the next restart. Tap it, confirm, and the tablet
+   reboots into recovery and installs the update. The first start-up after the
+   update is slow, because Android re-optimises every app.
+
+   If no notification appears, install the package from recovery instead.
+   Run `adb reboot recovery`. If you see "No command", hold Power and press
+   Volume Up to show the menu. Choose **apply update from ADB**, run
+   `adb sideload UL-P023-WW-4.7.5.0-user.zip` on the PC, then choose
+   **reboot system now**.
 3. Afterwards, `adb shell getprop ro.build.asus.version` should print `4.7.5.0`.
    The update put back the stock (signed) boot image, so zram is off again.
    Continue with [Install](#install).
