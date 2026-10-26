@@ -9,9 +9,9 @@ This repo builds a patched boot image that turns on the 512 MB zram swap ASUS
 already configured. Nothing else changes: the kernel, the kernel command line
 and the rest of the ramdisk stay byte-for-byte stock.
 
-**Tested on:** Z300C (P023) with an unlocked bootloader. After flashing,
-SELinux stays `Enforcing` and `/proc/swaps` lists `/dev/block/zram0` at
-524284 kB.
+**Tested on:** Z300C (P023), firmware `WW_P023-V4.7.5-20160419`, unlocked
+bootloader. After flashing, SELinux stays `Enforcing`, WiFi works, and
+`/proc/swaps` lists `/dev/block/zram0` at 524284 kB.
 
 > [!CAUTION]
 > **The tablet must already run firmware 4.7.5.0** before you flash. Check it:
