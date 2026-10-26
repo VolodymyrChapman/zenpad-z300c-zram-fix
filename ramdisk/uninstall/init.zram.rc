@@ -1,0 +1,12 @@
+# One-time uninstaller, used only by boot-zram-uninstall.img. It puts back
+# the stock /system/bin/adbon.sh from firmware WW-4.7.5.0 and removes the
+# hook. Boots with androidboot.selinux=permissive for the same reason as
+# the installer.
+
+on post-fs
+    mount ext4 /dev/block/platform/soc0/e0000000.noc/by-name/ImcPartID068 /system rw remount
+    copy /adbon.sh /system/bin/adbon.sh
+    rm /system/etc/zram.sh
+    restorecon /system/bin/adbon.sh
+    mount ext4 /dev/block/platform/soc0/e0000000.noc/by-name/ImcPartID068 /system ro remount
+    setprop zramhook.uninstaller done

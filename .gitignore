@@ -1,0 +1,10 @@
+# Built images contain ASUS firmware; build them locally
+out/
+*.img
+
+# ASUS firmware
+UL-P023-*
+*.zip
+fwu_image.bin
+
+__pycache__/

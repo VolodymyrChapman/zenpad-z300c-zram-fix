@@ -1,0 +1,14 @@
+# Missing from ASUS firmware WW-4.7.5: init.sofia3g.rc imports this file,
+# but it was never added to the ramdisk, so zram swap was never enabled.
+# Settings mirror the unused init.smallram.rc that ships in the same ramdisk.
+
+on boot
+    # Read one page at a time for swap (default is 8)
+    write /proc/sys/vm/page-cluster 0
+    # Prefer compressing idle pages over killing background apps
+    write /proc/sys/vm/swappiness 160
+    write /sys/fs/cgroup/memory/sw/memory.swappiness 160
+
+on post-fs-data
+    # 512 MB zram device, defined in /fstab.zram
+    swapon_all /fstab.zram

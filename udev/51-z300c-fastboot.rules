@@ -1,0 +1,3 @@
+# ASUS ZenPad 10 (Z300C) in fastboot mode enumerates as Intel 8087:0912,
+# which the packaged android-sdk-platform-tools-common rules don't cover.
+SUBSYSTEM=="usb", ATTR{idVendor}=="8087", ATTR{idProduct}=="0912", MODE="0660", GROUP="plugdev", TAG+="uaccess", SYMLINK+="android_fastboot"

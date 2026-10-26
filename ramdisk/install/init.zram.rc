@@ -1,0 +1,18 @@
+# One-time installer, used only by boot-zram-install.img. It copies the zram
+# hook into /system and then the tablet boots as usual; from then on the
+# stock, signed boot image turns zram on through the hooked adbon.sh.
+#
+# The image boots with androidboot.selinux=permissive, because the stock
+# policy doesn't let even init write to system_file. The hook itself runs
+# in init_shell (unconfined) and works with SELinux enforcing.
+
+on post-fs
+    mount ext4 /dev/block/platform/soc0/e0000000.noc/by-name/ImcPartID068 /system rw remount
+    copy /zram.sh /system/etc/zram.sh
+    chown root shell /system/etc/zram.sh
+    chmod 0755 /system/etc/zram.sh
+    # copy truncates the existing file, so it keeps root:shell 0755
+    copy /adbon.sh /system/bin/adbon.sh
+    restorecon /system/etc/zram.sh /system/bin/adbon.sh
+    mount ext4 /dev/block/platform/soc0/e0000000.noc/by-name/ImcPartID068 /system ro remount
+    setprop zramhook.installer done
