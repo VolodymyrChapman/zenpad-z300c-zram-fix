@@ -9,15 +9,26 @@ This repo builds a patched boot image that turns on the 512 MB zram swap ASUS
 already configured. Nothing else changes: the kernel, the kernel command line
 and the rest of the ramdisk stay byte-for-byte stock.
 
-**Tested on:** Z300C (P023), firmware `WW_P023-V4.7.5-20160419`, unlocked
-bootloader. After flashing, SELinux stays `Enforcing` and `/proc/swaps` lists
-`/dev/block/zram0` at 524284 kB.
+**Tested on:** Z300C (P023) with an unlocked bootloader. After flashing,
+SELinux stays `Enforcing` and `/proc/swaps` lists `/dev/block/zram0` at
+524284 kB.
+
+> [!CAUTION]
+> **The tablet must already run firmware 4.7.5.0** before you flash. Check it:
+> `adb shell getprop ro.build.asus.version` must print `4.7.5.0`.
+> The boot image contains the kernel, and each firmware's kernel only loads
+> the kernel modules signed for it in `/system`. Flashing the 4.7.5 boot image
+> onto a 4.7.3 tablet left it **without WiFi**: the kernel rejected the 4.7.3
+> WiFi modules (`Request for unknown module key`). If your tablet is older,
+> install the official `UL-P023-WW-4.7.5.0-user.zip` first (see
+> [Updating to 4.7.5](#updating-to-4750)).
 
 > [!WARNING]
 > You do this at your own risk. It needs an **unlocked bootloader**. Once a
 > modified boot image is installed, **don't relock the bootloader**: a locked
 > bootloader checks the boot image's signature and would probably refuse to
-> boot. Keep `boot-stock.img` so you can go back.
+> boot. `boot-stock.img` is the 4.7.5 stock boot image. It only restores
+> a tablet that runs 4.7.5.
 
 ## The bug
 `init.sofia3g.rc` in the stock boot ramdisk has `import /init.zram.rc`, but ASUS
@@ -82,10 +93,27 @@ sudo udevadm trigger
 
 Then unplug and replug the tablet.
 
+## Updating to 4.7.5.0
+The official package is a full update: it reformats `/system` and rewrites
+the boot and recovery images, but keeps your apps and data. Back up anything
+important anyway, and start with the battery above 50%.
+
+1. Copy `UL-P023-WW-4.7.5.0-user.zip` to the root of the tablet's internal storage:
+   ```bash
+   adb push UL-P023-WW-4.7.5.0-user.zip /sdcard/
+   ```
+2. On the tablet, tap the "System update file detected" notification. It may
+   take a minute to appear; if it doesn't, restart the tablet. Then confirm.
+   The tablet reboots into recovery and installs the update.
+3. Afterwards, `adb shell getprop ro.build.asus.version` should print `4.7.5.0`.
+   The update put back the stock (signed) boot image, so zram is off again.
+   Continue with [Install](#install).
+
 ## Install
 1. Turn on USB debugging (Settings → About → Software information → tap
    *Build number* 7 times, then Developer options → USB debugging). Then check
-   that `adb devices` lists the tablet as `device`.
+   that `adb devices` lists the tablet as `device`, and that
+   `adb shell getprop ro.build.asus.version` prints `4.7.5.0`.
 2. `adb reboot bootloader`
 3. **Try the image first without installing it.** This boots it once from RAM:
    ```bash
@@ -117,6 +145,9 @@ fastboot reboot
 ```
 
 Afterwards, `adb shell ls /init.zram.rc` should say *No such file*.
+This only restores a 4.7.5 tablet. If the patched image went onto an older
+firmware, install the full 4.7.5 package instead (see
+[Updating to 4.7.5](#updating-to-4750)).
 As a last resort, reinstalling the official `UL-P023-WW-4.7.5.0-user.zip`
 from recovery restores the whole system.
 

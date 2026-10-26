@@ -63,6 +63,24 @@ ran the patched ramdisk. So the data was written, and the failure is reported
 by a later step, most likely the signature (VRL/secpack) update. An unlocked
 SLB boots the image anyway. A locked one presumably would not.
 
+## Kernel and /system must be the same firmware version
+The boot image carries the kernel, and the WiFi driver lives in `/system/lib/modules`
+(`compat_*.ko`, `iwlmvm.ko`, loaded by `/system/bin/load_iwlwifi.sh`). Each
+firmware build signs its modules with its own throwaway key ("Magrathea: Glacier
+signing key"), and only that build's kernel knows the key:
+
+| Firmware | Module signing key id |
+|---|---|
+| 4.7.5.0 | `3c61e404187ac9919bbbaf2df9cc5dfa02fb149a` (embedded in the 4.7.5 kernel) |
+| 4.7.3.0 | `b3fdb6194fe043e81290b3a9a570eee31d8f4b3f` |
+
+Flashing the 4.7.5 boot image onto a tablet whose `/system` was 4.7.3 produced
+`Request for unknown module key '...: b3fdb619...' err -11` in dmesg. No WiFi
+modules loaded, so there was no `wlan0` and WiFi couldn't be switched on. The
+fix was to install the full 4.7.5 package and then flash `boot-zram.img` again.
+The 4.7.3 boot image couldn't be recovered: the flash had overwritten it, and
+there was no backup of it.
+
 ## USB IDs
 | ID | Mode |
 |---|---|
