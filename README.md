@@ -117,8 +117,11 @@ free for the package itself.
    ```
 2. **Restart the tablet.** The update notification doesn't appear when the file
    is copied, only after the next restart. Tap it, confirm, and the tablet
-   reboots into recovery and installs the update. The first start-up after the
-   update is slow, because Android re-optimises every app.
+   reboots into recovery and installs the update. Allow about 15–20 minutes
+   for the install itself. After that, the first start-up is slow too: Android
+   shows "Optimising app X of Y" while it re-optimises every app, which took
+   about another 15 minutes with 22 apps installed. Keep the tablet on the charger and don't
+   interrupt it.
 
    If no notification appears, install the package from recovery instead.
    Run `adb reboot recovery`. If you see "No command", hold Power and press
